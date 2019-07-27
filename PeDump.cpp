@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 	{
 		dbg("[----] File mapping failed\n");
 		HeapFree(fnGetProcessHeap(), 0, (LPVOID)fileSize); 
-        CloseHandle(file);
+                CloseHandle(file);
 
 	}
 
