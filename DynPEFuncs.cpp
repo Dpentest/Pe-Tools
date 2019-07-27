@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Windows.h>
 #include <strsafe.h>
-#include <iostream>
+
 
 struct CLIENT_ID
 {
@@ -88,10 +88,21 @@ struct LDR_DATA_TABLE_ENTRY
 	//...
 };
 
+int  _strcmp(PCHAR s1, PCHAR s2)
+{
+	while (*s1 == *s2)
+	{
+		if (*s1 == 0)
+			return 0;
+		s1++;
+		s2++;
+	}
+	return s1 - s2;
+}
 
 HMODULE WINAPI fnGetModuleW(_In_opt_ PWCHAR lpModuleName)
 {
-    TEB *pTeb = (TEB*)NtCurrentTeb();
+        TEB *pTeb = (TEB*)NtCurrentTeb();
 	PEB *pPeb = pTeb->ProcessEnvironmentBlock;
 
 	PEB_LDR_DATA *pLdrData = pPeb->Ldr;
@@ -118,3 +129,26 @@ HMODULE WINAPI fnGetModuleW(_In_opt_ PWCHAR lpModuleName)
 }
 
 
+PVOID WINAPI fnGetProcAddress(HMODULE Mod, PCHAR Func)
+{
+	PIMAGE_DOS_HEADER pDosHead;
+	PIMAGE_NT_HEADERS pNtHead;
+	PIMAGE_DATA_DIRECTORY pData;
+	PIMAGE_EXPORT_DIRECTORY pExD;
+	pDosHead = PIMAGE_DOS_HEADER(Mod);
+	pNtHead = (PIMAGE_NT_HEADERS)((DWORD)Mod + (DWORD)pDosHead->e_lfanew);
+	pData = &pNtHead->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
+        pExD = (PIMAGE_EXPORT_DIRECTORY)((DWORD)pDosHead + pData->VirtualAddress);
+	LPWORD pOrdinals = (LPWORD)(Mod + pExD->AddressOfNameOrdinals);
+	
+	for (auto i = 0; i < pExD->NumberOfNames; ++i)
+	{
+		PCHAR _aa = ((PCHAR)(DWORD)pDosHead + ((PULONG)((DWORD)pDosHead +pExD->AddressOfNames))[i]);
+		if (_strcmp(_aa, Func))
+			continue;
+		return (FARPROC)(Mod + ((DWORD *)(Mod + pExD->AddressOfFunctions))[pOrdinals[i]]);
+
+	}
+
+	return 0;
+}
