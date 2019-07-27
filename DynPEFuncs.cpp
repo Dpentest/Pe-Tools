@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <Windows.h>
-#include <strsafe.h>
+
 
 /** Custom Wrappers for GetModuleHandleW && GetProcAddress **/ 
 
