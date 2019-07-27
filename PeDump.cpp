@@ -155,6 +155,8 @@ int main(int argc, char* argv[]) {
 	}
 	
 	dbg("=> Press Any Key to Exit()");
+	CloseHanle(file);
 	_gettchar();
+	
 
 }
