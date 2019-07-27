@@ -2,6 +2,8 @@
 #include <Windows.h>
 #include <strsafe.h>
 
+/** Custom Wrappers for GetModuleHandleW && GetProcAddress **/ 
+
 
 struct CLIENT_ID
 {
