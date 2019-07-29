@@ -141,15 +141,17 @@ PVOID WINAPI fnGetProcAddress(HMODULE Mod, PCHAR Func)
 	pNtHead = (PIMAGE_NT_HEADERS)((DWORD)Mod + (DWORD)pDosHead->e_lfanew);
 	pData = &pNtHead->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
         pExD = (PIMAGE_EXPORT_DIRECTORY)((DWORD)pDosHead + pData->VirtualAddress);
-	LPWORD pOrdinals = (LPWORD)(Mod + pExD->AddressOfNameOrdinals);
-	
+	DWORD fncRVA = NULL;
 	for (auto i = 0; i < pExD->NumberOfNames; ++i)
 	{
-		PCHAR _aa = ((PCHAR)(DWORD)pDosHead + ((PULONG)((DWORD)pDosHead +pExD->AddressOfNames))[i]);
-		if (_strcmp(_aa, Func))
-			continue;
-		return (FARPROC)(Mod + ((DWORD *)(Mod + pExD->AddressOfFunctions))[pOrdinals[i]]);
+		if ((DWORD)Func & 0xFFFF0000)
+		{
+			PCHAR _aa = ((PCHAR)(DWORD)pDosHead + ((PULONG)((DWORD)pDosHead + pExD->AddressOfNames))[i]);
+			if (_strcmp(_aa, Func)) continue;
+			DWORD index = ((WORD*)((DWORD)pDosHead + pExD->AddressOfNameOrdinals))[i];
+			fncRVA = ((DWORD*)((DWORD)pDosHead + pExD->AddressOfFunctions))[index];
 
+		}
 	}
 
 	return 0;
