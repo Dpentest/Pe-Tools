@@ -1,6 +1,10 @@
 #include "stdafx.h"
 #include <Windows.h>
 
+/*
+Author : Souhardya Sardar
+*/
+
 BOOL FileMap(LPWSTR File, LPWSTR SpoofFile)
 {
 	HANDLE hFile = CreateFileW(File, GENERIC_READ, FILE_ATTRIBUTE_NORMAL, 0 , OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
