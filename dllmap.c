@@ -6,7 +6,7 @@ BOOL FileMap(LPWSTR File, LPWSTR SpoofFile)
 	HANDLE hFile = CreateFileW(File, GENERIC_READ, FILE_ATTRIBUTE_NORMAL, 0 , OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		printf_s("Can not read: ", File);
+		wprintf_s(L"Can not read: ", File);
 		return FALSE;
 	}
 
